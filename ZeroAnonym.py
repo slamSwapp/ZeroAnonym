@@ -5,7 +5,7 @@ import numpy as np
 from io import BytesIO
 
 '''
-    Функции для цветного вывода
+    Functions for color output
 '''
 def print_green(text):
     print(f"\033[92m{text}\033[0m")
@@ -14,64 +14,64 @@ def print_red(text):
     print(f"\033[91m{text}\033[0m")
 
 '''
-    Загрузка изображения по URL
+    URL image load
 '''
 def load_image_from_url(url):
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Проверка на ошибки HTTP
-        image_data = BytesIO(response.content)  # Преобразование в поток байтов
-        image = cv2.imdecode(np.frombuffer(image_data.read(), np.uint8), cv2.IMREAD_COLOR)  # Декодирование изображения
+        response.raise_for_status()  # HTTP errors check
+        image_data = BytesIO(response.content)  # Baytte transformation
+        image = cv2.imdecode(np.frombuffer(image_data.read(), np.uint8), cv2.IMREAD_COLOR)  # Image decoding
         return image
     except requests.exceptions.RequestException as e:
         print_red(f"[-] Image loading error: {e}")
         return None
 
 '''
-    Преобразование изображения в ASCII-арт
+    Image conversion into ASCII-art
 '''
 def convert_image_to_ascii(image):
     if image is None:
         print_red("[-] Error: Image didn't load.")
         return
 
-    # Символы для ASCII-арта (от темного к светлому)
+    # Symbols for ASCII-Art(from dark to bright)
     string = " `.,-':<>;+!*/?%&98#"
     coef = 255 / (len(string) - 1)
 
-    # Получение размеров изображения
+    #Obtaining the size of the image
     height, width, _ = image.shape
 
-    # Максимальная ширина для ASCII-арта
+    # Max width for ASCII-Art
     max_width = 125
 
-    # Сохранение пропорций и изменение размера
+    # Preservation of proportions and change in size
     aspect_ratio = height / width
     new_width = max_width
-    new_height = int(aspect_ratio * new_width * 0.55)  # Умножение на 0.55 для коррекции пропорций
+    new_height = int(aspect_ratio * new_width * 0.55)  # Multiplication by 0.55 to correct proportions
 
-    # Изменение размера изображения
+    # Changing the size of the image
     resized_image = cv2.resize(image, (new_width, new_height))
 
-    # Преобразование в черно-белое
+    # Transformation into black and white
     gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
 
     # Генерация ASCII-арта
-    for y in range(0, new_height, 2):  # Шаг 2 для уменьшения высоты
+    for y in range(0, new_height, 2):  # Step 2 to reduce the height
         s = ""
         for x in range(0, new_width, 1):
             try:
-                # Нормализация значения пикселя
+                # Normalization of the pixel value
                 pixel_value = gray_image[y, x]
                 index = min(max(int(pixel_value / coef), 0), len(string) - 1)
                 s += string[index]
             except IndexError:
                 pass
-        if s:  # Печать только непустых строк
+        if s:  # Printing only non -empty lines
             print(s)
 
 '''
-    Определение дистрибутива Linux
+    Determination of the Linux distribution
 '''
 def get_linux_distro():
     try:
@@ -83,7 +83,7 @@ def get_linux_distro():
         return None
 
 '''
-    Определение пакетного менеджера
+    Determination of the package manager
 '''
 def get_package_manager():
     distro = get_linux_distro()
@@ -99,7 +99,7 @@ def get_package_manager():
         return None
 
 '''
-    Установка программы
+    Installing program
 '''
 def install_program(program_name):
     package_manager = get_package_manager()
@@ -113,13 +113,13 @@ def install_program(program_name):
         print_red("Unsupported Linux distribution. Please install the program manually.")
 
 '''
-    Проверка наличия программы
+    Checking the availability of the program
 '''
 def is_program_installed(program_name):
     return os.system(f"which {program_name}") == 0
 
 '''
-    Проверка списка программ
+    Checking the list of programs
 '''
 def check_program(program_list):
     missing_programs = []
@@ -148,16 +148,16 @@ def check_program(program_list):
     Основная функция
 '''
 if __name__ == "__main__":
-    # URL изображения
+    # image URL 
     image_url = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.1C0HFAqfm-4XIkbT_F93GgHaHa%26pid%3DApi&f=1&ipt=e9cd9c577acd19a4ccbc5cf1428e871eb06e209289701d3ee7b78444d0a093e0&ipo=images"
     
-    # Загрузка изображения
+    # loading image
     image = load_image_from_url(image_url)
     
-    # Преобразование изображения в ASCII-арт
+    # mage transformation into ASCII-Art
     if image is not None:
         convert_image_to_ascii(image)
     
-    # Проверка и установка необходимых программ
+    # Checking and installing the necessary programs
     program_to_check = ["tor", "nmap", "curl", "wget", "macchanger", "bleachbit"]
     check_program(program_to_check)
